@@ -12,22 +12,13 @@
 """
 
 import yaml
-from docpie import docpie
 
 debugging = False
 
 
 def debug(*packed):
     if debugging:
-        print('        ', *packed)
-
-
-def fpga_to_hz(var):
-    return (6250 * int(var)) + 409600000
-
-
-def hz_to_fpga(var):
-    return int((var - 409600000) / 6250)
+        print(' ' * 4, *packed)
 
 
 class Settings:
@@ -39,6 +30,7 @@ class Settings:
 
     :return object: settings object
     """
+
     def __init__(self, config_file="config.yaml"):
         """ initialise and read configuration """
         self.config_file = config_file
@@ -56,16 +48,9 @@ class Settings:
             debug(e)
             self.write_default_config()
 
-    def write_default_config(self, fpga_range=(200, 300), enabled=False) -> None:
-        """ write default configuration """
-        freq_list = [{'fpga': fpga, 'hz': fpga_to_hz(fpga), 'enabled': enabled} for fpga in
-                     range(fpga_range[0], fpga_range[1])]
-
-        self.config["frequencies"] = freq_list
-        self.config['ch_types'] = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
-        self.config["channels"] = {}
-        self.config["channel_groups"] = []
-        self.config["towers"] = {}
+    def write_default_config(self, config: dict = None) -> None:
+        """ write supplied configuration """
+        self.config = config
         self.write_config()
         debug(f'WriteDefaultConfig()')
 
@@ -75,17 +60,14 @@ class Settings:
             yaml.dump(self.config, file_object)
         debug(f'Wrote config to {self.config_file}')
 
-    def enabled_frequencies(self) -> list:
-        return [i['hz'] for i in self.config['frequencies'] if i['enabled']]
-
-
+    # def enabled_frequencies(self) -> list:
+    #     t[i['hz'] for i in self.config['frequencies'] if i['enabled']]
+    #     return
 def main():
+    print('Being called directly, showing config')
     settings = Settings()
-    settings.write_default_config(fpga_range=(200, 202), enabled=True)
     print(settings.config)
 
 
 if __name__ == '__main__':
-    args = docpie(__doc__)
-    print(args)
     main()
