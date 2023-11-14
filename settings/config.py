@@ -12,6 +12,7 @@
 """
 
 import yaml
+from dataclasses import dataclass
 
 debugging = False
 
@@ -48,7 +49,6 @@ class Settings:
             debug(e)
             self.write_default_config()
 
-
     def write_default_config(self, config: dict = None) -> None:
         """ write supplied configuration """
         self.config = config
@@ -64,6 +64,8 @@ class Settings:
     # def enabled_frequencies(self) -> list:
     #     t[i['hz'] for i in self.config['frequencies'] if i['enabled']]
     #     return
+
+
 def main():
     print('Being called directly, showing config')
     settings = Settings()

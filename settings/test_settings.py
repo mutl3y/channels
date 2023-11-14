@@ -1,7 +1,9 @@
 import os
 from unittest import TestCase
-import config
+import settings.config as config
 import tempfile
+import channels
+
 
 def fpga_to_hz(var):
     return (6250 * int(var)) + 409600000
@@ -9,6 +11,7 @@ def fpga_to_hz(var):
 
 def hz_to_fpga(var):
     return int((var - 409600000) / 6250)
+
 
 def cleanup(file):
     try:
@@ -21,7 +24,6 @@ def cleanup(file):
 
 
 class Test(TestCase):
-
 
     def test_fpga_to_hz(self):
         self.assertEqual(fpga_to_hz(200), 410850000)
@@ -40,7 +42,7 @@ class Test(TestCase):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
         self.addCleanup(cleanup, configfile)
 
-        enabled_freq_tuple = (200,210)
+        enabled_freq_tuple = (200, 210)
         s = config.Settings(config_file=configfile.name)
 
         test_config = dict()
@@ -52,10 +54,7 @@ class Test(TestCase):
         test_config["channel_groups"] = []
         test_config["towers"] = []
         s.write_default_config(config=test_config)
-        self.assertTrue(len( [i['hz'] for i in s.config['frequencies'] if i['enabled']]) == (enabled_freq_tuple[1] - enabled_freq_tuple[0]))
-
-
-
-
+        self.assertTrue(len([i['hz'] for i in s.config['frequencies'] if i['enabled']]) == (
+                    enabled_freq_tuple[1] - enabled_freq_tuple[0]))
 
 
