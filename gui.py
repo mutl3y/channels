@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import PySimpleGUI as sg
-import channels
+import channels, utils
 
 
 def channels_window(config: dict, theme='bluePurple') -> (bool, dict):
@@ -108,22 +108,20 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
     """
 
     working_config = config
-    print(type(working_config))
+
     if isinstance(key, int):
         current = working_config['channels'][key]
     else:
-        current = ('', 0, 0, 'PRIORITY')
+        current = ('', 0, 'PRIORITY')
 
     # users parameters from class
     edit_channel_window_layouts = {
         'name': [sg.T('Name'), sg.Push(), sg.Input(default_text=current[0], key='-NAME-', size=10, )],
-        'base': [sg.T('Base'), sg.Push(),
-                 sg.Combo(default_value=current[1], values=(), k='-BASE-', readonly=False, size=11)],
         'center': [sg.T('Center'), sg.Push(),
-                   sg.Combo(default_value=current[2], values=channels.enabled_frequencies(working_config),
+                   sg.Combo(default_value=current[1], values=channels.enabled_frequencies(working_config),
                             readonly=False, k='-CENTER-', size=11)],
         'channel_type': [sg.T('Channel Type'), sg.Push(),
-                         sg.Combo(default_value=current[3], values=working_config['channel_types'],
+                         sg.Combo(default_value=current[2], values=working_config['channel_types'],
                                   readonly=False, k='-CH_TYPE-', size=11)],
     }
 
@@ -147,7 +145,7 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
             break
 
         if 'Ok' in event:
-            fields = values['-NAME-'], values['-BASE-'], values['-CENTER-'], values['-CH_TYPE-']
+            fields = values['-NAME-'], values['-CENTER-'], values['-CH_TYPE-']
             # empty_count = [f for f in fields if f == '']
             if fields.count('') > 0:
                 sg.popup_ok('Fields can not be empty', background_color='red', keep_on_top=True)

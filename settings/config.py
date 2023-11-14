@@ -41,12 +41,13 @@ class Settings:
         """ read configuration """
         try:
             with open(self.config_file, "r") as file_object:
-                self.config = yaml.load(file_object, Loader=yaml.SafeLoader)
+                self.config = yaml.safe_load(file_object)
             debug(f'parsed {self.config_file} ok')
             debug(f'found config sections for {list(self.config.keys())}')
         except Exception as e:
             debug(e)
             self.write_default_config()
+
 
     def write_default_config(self, config: dict = None) -> None:
         """ write supplied configuration """
@@ -57,7 +58,7 @@ class Settings:
     def write_config(self) -> None:
         """ write configuration """
         with open(self.config_file, "w") as file_object:
-            yaml.dump(self.config, file_object)
+            yaml.safe_dump(self.config, file_object, encoding='utf-8')
         debug(f'Wrote config to {self.config_file}')
 
     # def enabled_frequencies(self) -> list:

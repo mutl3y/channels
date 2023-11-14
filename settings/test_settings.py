@@ -1,6 +1,6 @@
 import os
 from unittest import TestCase
-import settings.config
+import config
 import tempfile
 
 def fpga_to_hz(var):
@@ -33,7 +33,7 @@ class Test(TestCase):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
         self.addCleanup(cleanup, configfile)
 
-        s = settings.config.Settings(config_file=configfile.name)
+        s = config.Settings(config_file=configfile.name)
         self.assertTrue(os.path.exists(configfile.name))
 
     def test_supplying_default_configuration(self):
@@ -41,7 +41,7 @@ class Test(TestCase):
         self.addCleanup(cleanup, configfile)
 
         enabled_freq_tuple = (200,210)
-        s = settings.config.Settings(config_file=configfile.name)
+        s = config.Settings(config_file=configfile.name)
 
         test_config = dict()
         freq_list = [{'fpga': fpga, 'hz': fpga_to_hz(fpga), 'enabled': True} for fpga in
