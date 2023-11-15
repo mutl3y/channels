@@ -20,7 +20,7 @@ def channels_window(config: dict, theme='bluePurple') -> (bool, dict):
     right_click_menu_def = [[], ['Add', 'Edit ', 'Clone', 'Delete']]
     layout = [
         # [sg.T('Channel Config', font='DEFAIULT 18')],
-        [sg.Table(values=config['channels'], headings=config['channel_headers'],
+        [sg.Table(values=list(config['channels']), headings=config['channel_headers'],
                   auto_size_columns=True,
                   display_row_numbers=False,
                   justification='center', key='-TABLE-',

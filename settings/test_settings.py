@@ -1,8 +1,8 @@
 import os
+import time
 from unittest import TestCase
-import settings.config as config
+import config
 import tempfile
-import channels
 
 
 def fpga_to_hz(var):
@@ -35,7 +35,8 @@ class Test(TestCase):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
         self.addCleanup(cleanup, configfile)
 
-        s = config.Settings(config_file=configfile.name)
+        s = config.Settings().save(configfile.name)
+
         self.assertTrue(os.path.exists(configfile.name))
 
     def test_supplying_default_configuration(self):
@@ -43,18 +44,31 @@ class Test(TestCase):
         self.addCleanup(cleanup, configfile)
 
         enabled_freq_tuple = (200, 210)
-        s = config.Settings(config_file=configfile.name)
+        s = config.Settings()
 
-        test_config = dict()
-        freq_list = [{'fpga': fpga, 'hz': fpga_to_hz(fpga), 'enabled': True} for fpga in
+        # setup test data, order is important for human eyes only loop checks keys
+        s.data["channel_groups"] = []
+        s.data['channel_types'] = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
+        s.data["channels"] = [{
+            'name' : 'test',
+            'center': 33,
+            'ch_type': 'BULK'}
+        ]
+        freq_list = [{'enabled': True, 'fpga': fpga, 'hz': fpga_to_hz(fpga) } for fpga in
                      range(enabled_freq_tuple[0], enabled_freq_tuple[1])]
-        test_config["frequencies"] = freq_list
-        test_config['channel_types'] = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
-        test_config["channels"] = []
-        test_config["channel_groups"] = []
-        test_config["towers"] = []
-        s.write_default_config(config=test_config)
-        self.assertTrue(len([i['hz'] for i in s.config['frequencies'] if i['enabled']]) == (
-                    enabled_freq_tuple[1] - enabled_freq_tuple[0]))
+        s.data["frequencies"] = freq_list
+        s.data["towers"] = []
 
+        self.assertTrue(len([i['hz'] for i in s.data['frequencies'] if i['enabled']]) == (
+                enabled_freq_tuple[1] - enabled_freq_tuple[0]))
+        s.save('config.yaml')
+        self.assertTrue(len([i['hz'] for i in s.data['frequencies'] if i['enabled']]) == (
+                enabled_freq_tuple[1] - enabled_freq_tuple[0]))
+        t = config.Settings().load('config.yaml')
+        for k in s.data:
+            self.assertEqual(t.data[k], s.data[k])
 
+        print('tests passed here is what the data looked like \n1st line before, 2nd after')
+        print(s)
+        print(t)
+        time.sleep(0.2)
