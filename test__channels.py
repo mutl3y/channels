@@ -1,7 +1,9 @@
+import pprint
 from unittest import TestCase
 from channels import Channel, default_config, main
 import settings.config as config
-import tempfile, os
+import tempfile
+import os
 
 
 def cleanup(file):
@@ -13,38 +15,39 @@ def cleanup(file):
             print(f'issues deleting {file.name}')
         pass
 
+
 class TestChannel(TestCase):
     def test_keys(self):
         c = Channel('test', 1, 'BULK UP')
         self.assertEqual(list(c.__dict__.keys()), ['name', 'center', 'channel_type', 'fpga'])
 
     def test_values(self):
-        c = Channel('test', 1, 'BULK UP')
-        self.assertListEqual(list(c.__dict__.values()), ['test', 1, 'BULK UP', 409606250])
+        c = Channel('test', 409606250, 'BULK UP')
+        self.assertListEqual(list(c.__dict__.values()), ['test', 409606250, 'BULK UP', 1])
 
 
-
-class GUI_Test(TestCase):
+class GuiTest(TestCase):
     def test_test_code(self):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
         self.addCleanup(cleanup, configfile)
         app_settings = config.Settings()
-        app_settings.data = default_config()
+        # app_settings.data = default_config()
 
         # force overwrite of configuration
         app_settings.save(configfile.name)
 
         # test code
-        c = Channel('test', 1, 'BULK UP')
+        c = Channel('test', 409606250, 'BULK UP')
         # c = channels.Channel('name',1,'str')
-        print('Test: item to add to channel list', c)
-        self.assertListEqual(list(c.__dict__.values()), ['test', 1, 'BULK UP', 409606250])
+        self.assertListEqual(list(c.__dict__.values()), ['test',409606250, 'BULK UP', 1])
         app_settings.channels.append(c)
         app_settings.channels.append(c)
-        self.assertListEqual(app_settings.channels, [c,c])
+        self.assertListEqual(app_settings.channels, [c, c])
 
+        print('Test: item to add to channel list', c)
         print('Test: should show 2 items')
-        for i in app_settings.channels:
-            print('     ',i)
+        pp.pprint(app_settings.channels)
 
         main()
+
+pp = pprint.PrettyPrinter(indent=4)

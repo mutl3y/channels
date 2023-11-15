@@ -3,6 +3,7 @@ import time
 from unittest import TestCase
 import config
 import tempfile
+import pprint
 
 
 def fpga_to_hz(var):
@@ -22,11 +23,12 @@ def cleanup(file):
             print(f'issues deleting {file.name}')
         pass
 
+pp = pprint.PrettyPrinter(indent=4)
 
 class Test(TestCase):
 
     def test_fpga_to_hz(self):
-        self.assertEqual(fpga_to_hz(200), 410850000)
+        self.assertEqual(hz_to_fpga(410850000), 200)
 
     def test_hz_to_fpga(self):
         self.assertEqual(410850000, fpga_to_hz(200))
@@ -39,6 +41,9 @@ class Test(TestCase):
 
         self.assertTrue(os.path.exists(configfile.name))
 
+
+
+
     def test_supplying_default_configuration(self):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
         self.addCleanup(cleanup, configfile)
@@ -48,7 +53,7 @@ class Test(TestCase):
 
         # setup test data, order is important for human eyes only loop checks keys
         s.channel_types = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
-        s.channels = [{'center': 33, 'ch_type': 'BULK', 'name': 'test'}]
+        s.channels = [{'center': 410850000, 'ch_type': 'BULK', 'name': 'test'}]
         freq_list = [{'enabled': True, 'fpga': fpga, 'hz': fpga_to_hz(fpga)} for fpga in
                      range(enabled_freq_tuple[0], enabled_freq_tuple[1])]
         s.frequencies = freq_list
@@ -56,9 +61,11 @@ class Test(TestCase):
 
         self.assertTrue(len([i['hz'] for i in s.frequencies if i['enabled']]) == (
                 enabled_freq_tuple[1] - enabled_freq_tuple[0]))
+
         s.save(configfile.name)
-        self.assertTrue(len([i['hz'] for i in s.frequencies if i['enabled']]) == (
-                enabled_freq_tuple[1] - enabled_freq_tuple[0]))
+
+        # self.assertTrue(len([i['hz'] for i in s.frequencies if i['enabled']]) == (
+        #         enabled_freq_tuple[1] - enabled_freq_tuple[0]))
         t = config.Settings().load(configfile.name)
 
         for k in s.__dict__.keys():
@@ -72,5 +79,6 @@ class Test(TestCase):
         # print(s)
         # print(t)
         # print(f'\nThis is raw from config file \n{view}\n')
+        #
         #
         # time.sleep(0.2)

@@ -1,26 +1,45 @@
 #!/usr/bin/env python3
 
 import PySimpleGUI as sg
-import channels, settings
+import channels
+import time
+from settings.config import Settings as Settings
 
 
-def channels_window(config: settings.Settings, theme: str ='bluePurple') -> (bool, dict):
+def channels_window(conf: Settings, theme: str ='bluePurple') -> (bool, dict):
     """
     Show the channel configuration window
 
     # :return: True if settings were changed
     # :rtype: (bool)
     """
-
     try:
-        sg.Theme = config['theme']
+        sg.Theme = conf.theme
     except:
         sg.Theme = theme
+    selected_cell = None
+
+    # print('Pretty printing ', config.channels)
+    # for i in config.channels:
+    #     print(list(i.values()))
+    #
+    # ch_list2 = [(list(i.values())) for i in config.channels]
+    # print(ch_list2)
+    # time.sleep(3)
+    # exit(0)
+    cc = channels.Channel('',1,'')
+    del(cc)
+
+    val = [i.values() for i in conf.channels]
+    headers = [header.capitalize() for header in conf.channels[0].keys()]
+
+    print(headers)
+    print(val)
 
     right_click_menu_def = [[], ['Add', 'Edit ', 'Clone', 'Delete']]
     layout = [
         # [sg.T('Channel Config', font='DEFAIULT 18')],
-        [sg.Table(values=config['channels'], headings=config['channel_headers'],
+        [sg.Table(values=val, headings=conf.channel_headers,
                   auto_size_columns=True,
                   display_row_numbers=False,
                   justification='center', key='-TABLE-',
@@ -51,7 +70,7 @@ def channels_window(config: settings.Settings, theme: str ='bluePurple') -> (boo
             selected_cell = event[2]
             print(f'You selected row {selected_cell}')
         elif 'Delete' in event:
-            del config['channels'][selected_cell[0]]
+            del conf.channels[selected_cell[0]]
             print(f'deleted cell {selected_cell[0]}')
 
         # elif 'Add' in event:  # todo flesh out add and clone
@@ -59,9 +78,9 @@ def channels_window(config: settings.Settings, theme: str ='bluePurple') -> (boo
         #     config['channels'].append(channel.values())
         elif 'Clone' in event:
             if selected_cell is not None:
-                changed, conf = edit_channel_window(config, selected_cell[0])
+                changed, new_conf = edit_channel_window(conf, selected_cell[0])
                 if changed:
-                    config = conf
+                    conf = new_conf
                     del conf
                 print(f'Cloned Channel {selected_cell[0]}')
         elif 'Edit' in event:
@@ -71,17 +90,17 @@ def channels_window(config: settings.Settings, theme: str ='bluePurple') -> (boo
             else:
                 print(f'cell selected {selected_cell[0]}')
 
-                changed, conf = edit_channel_window(config, selected_cell[0])
+                changed, conf = edit_channel_window(conf, selected_cell[0])
             if changed:
                 print('config changed')
                 config = conf
                 del conf
 
         elif event.lower() in ('add'):
-            changed, conf = edit_channel_window(config, None)
+            changed, new_conf = edit_channel_window(conf, None)
             if changed:
                 print('config changed')
-                config = conf
+                config = new_conf
                 del conf
 
             # print(f'Edited Channel {selected_cell[0]}')
@@ -89,10 +108,10 @@ def channels_window(config: settings.Settings, theme: str ='bluePurple') -> (boo
         # save settings
         elif event == 'Ok':
             # sg.user_settings_set_entry('-theme-', values['-THEME-'])
-            return True, config
-        updated_list = [val for index in config['channels'] val in config['channels'][i].__dict__.values()]
-        print(updated_list)
-        window['-TABLE-'].update(values=)
+            return True, conf
+        # updated_list = [val for index in config['channels'] val in config['channels'][i].__dict__.values()]
+        # print(updated_list)
+        # window['-TABLE-'].update(values=)
 
 
 # def dict_to_list(d: dict, key: str) -> list:
@@ -114,8 +133,9 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
     if isinstance(key, int):
         current = working_config['channels'][key]
     else:
-        current = ('', 0, 'PRIORITY')
+        current = ('', 0, 'PRIORITY', 0)
 
+    print(current)
     # users parameters from class
     edit_channel_window_layouts = {
         'name': [sg.T('Name'), sg.Push(), sg.Input(default_text=current[0], key='-NAME-', size=10, )],
@@ -125,11 +145,12 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
         'channel_type': [sg.T('Channel Type'), sg.Push(),
                          sg.Combo(default_value=current[2], values=working_config['channel_types'],
                                   readonly=False, k='-CH_TYPE-', size=11)],
+        'fpga': [sg.T('FPGA'), sg.Push(), sg.T(default_text='', key='-FPGA-', size=10, )],
     }
 
     layout = [[], ]
 
-    for key in config['channel_headers']:
+    for key in config.annel_headers:
         layout += [edit_channel_window_layouts[key.lower()]]
 
     layout += [[sg.B('Ok'), sg.B('Cancel')]]

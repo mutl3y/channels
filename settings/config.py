@@ -14,7 +14,7 @@ def debug(*packed):
         print(' ' * 4, *packed)
 
 
-@dataclass_json
+# @dataclass_json
 @dataclass
 class Settings():
     # data: dict = field(default_factory=dict)
@@ -28,19 +28,10 @@ class Settings():
         with open(path, "wb") as f:
             yaml.safe_dump(self.__dict__, f, encoding='utf-8')
 
-    # @classmethod
-    # def load(cls, file_name):
-    #     my_data = {}
-    #     for k in cls.__annotations__.keys():
-    #         with open(file_name, "rb") as f:
-    #             my_data.__dict__.fromkeys(yaml.safe_load(f))
-    #     return cls(**my_data)
-    #
     @classmethod
     def load(cls, file_name):
         my_model = {}
         with open(file_name, "rb") as f:
-            # my_model[name] = pickle.load(f)
             d = yaml.safe_load(f)
         for name in cls.__annotations__:
             my_model[name] = d[name]
