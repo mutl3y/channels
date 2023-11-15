@@ -47,28 +47,30 @@ class Test(TestCase):
         s = config.Settings()
 
         # setup test data, order is important for human eyes only loop checks keys
-        s.data["channel_groups"] = []
-        s.data['channel_types'] = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
-        s.data["channels"] = [{
-            'name' : 'test',
-            'center': 33,
-            'ch_type': 'BULK'}
-        ]
-        freq_list = [{'enabled': True, 'fpga': fpga, 'hz': fpga_to_hz(fpga) } for fpga in
+        s.channel_types = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
+        s.channels = [{'center': 33, 'ch_type': 'BULK', 'name': 'test'}]
+        freq_list = [{'enabled': True, 'fpga': fpga, 'hz': fpga_to_hz(fpga)} for fpga in
                      range(enabled_freq_tuple[0], enabled_freq_tuple[1])]
-        s.data["frequencies"] = freq_list
-        s.data["towers"] = []
+        s.frequencies = freq_list
+        # stowers"] = []
 
-        self.assertTrue(len([i['hz'] for i in s.data['frequencies'] if i['enabled']]) == (
+        self.assertTrue(len([i['hz'] for i in s.frequencies if i['enabled']]) == (
                 enabled_freq_tuple[1] - enabled_freq_tuple[0]))
-        s.save('config.yaml')
-        self.assertTrue(len([i['hz'] for i in s.data['frequencies'] if i['enabled']]) == (
+        s.save(configfile.name)
+        self.assertTrue(len([i['hz'] for i in s.frequencies if i['enabled']]) == (
                 enabled_freq_tuple[1] - enabled_freq_tuple[0]))
-        t = config.Settings().load('config.yaml')
-        for k in s.data:
-            self.assertEqual(t.data[k], s.data[k])
+        t = config.Settings().load(configfile.name)
 
-        print('tests passed here is what the data looked like \n1st line before, 2nd after')
-        print(s)
-        print(t)
-        time.sleep(0.2)
+        for k in s.__dict__.keys():
+            self.assertEqual(t.__dict__[k], s.__dict__[k])
+            # print(f'Checking {t.__dict__[k]}  == {s.__dict__[k]}\n ')
+
+        with open(configfile.name, 'r') as file_object:
+            view = file_object.read()
+
+        # print('tests passed here is what the data looked like \n1st line before, 2nd after \n')
+        # print(s)
+        # print(t)
+        # print(f'\nThis is raw from config file \n{view}\n')
+        #
+        # time.sleep(0.2)

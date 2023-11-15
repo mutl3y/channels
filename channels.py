@@ -1,11 +1,7 @@
-import time
-
 import settings.config as settings
 import gui, utils
 from dataclasses import dataclass,field
-from dataclasses_json import dataclass_json
 
-@dataclass_json
 @dataclass
 class Channel:
     name: str
@@ -14,10 +10,6 @@ class Channel:
     fpga: int = field(init=False) #, repr=False)
     def __post_init__(self):
         self.fpga = ((6250 * self.center) + 409600000)
-
-
-
-channelList = []
 
 
 def default_config() -> dict:
@@ -52,17 +44,17 @@ def main():
 
     ch = Channel('test', 1, 'BULK UP')
     # print('item to add ', h.values())
-    print(ch.__dict__)
+    # print(ch.__dict__)
     # time.sleep(10)
     # exit(1)
-    app_settings.data['channels'].append(ch.to_dict())
+    app_settings.channels.append(ch.__dict__)
     # app_settings.data['channels'].append(ch.__dict__.items())
-    print(app_settings.data['channels'])
+    print(app_settings.channels)
     app_settings.save('config.yaml')
-    l = app_settings.data['channels']
+    l = app_settings.channels
     print(l)
 
-    changed, config = gui.channels_window(app_settings.data)
+    changed, config = gui.channels_window(app_settings.__dict__)
     app_settings.save('config.yaml')
     del config
 

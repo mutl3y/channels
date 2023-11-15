@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import PySimpleGUI as sg
-import channels, utils
+import channels, settings
 
 
-def channels_window(config: dict, theme='bluePurple') -> (bool, dict):
+def channels_window(config: settings.Settings, theme: str ='bluePurple') -> (bool, dict):
     """
     Show the channel configuration window
 
@@ -20,7 +20,7 @@ def channels_window(config: dict, theme='bluePurple') -> (bool, dict):
     right_click_menu_def = [[], ['Add', 'Edit ', 'Clone', 'Delete']]
     layout = [
         # [sg.T('Channel Config', font='DEFAIULT 18')],
-        [sg.Table(values=list(config['channels']), headings=config['channel_headers'],
+        [sg.Table(values=config['channels'], headings=config['channel_headers'],
                   auto_size_columns=True,
                   display_row_numbers=False,
                   justification='center', key='-TABLE-',
@@ -90,7 +90,9 @@ def channels_window(config: dict, theme='bluePurple') -> (bool, dict):
         elif event == 'Ok':
             # sg.user_settings_set_entry('-theme-', values['-THEME-'])
             return True, config
-        window['-TABLE-'].update(values=config['channels'])
+        updated_list = [val for index in config['channels'] val in config['channels'][i].__dict__.values()]
+        print(updated_list)
+        window['-TABLE-'].update(values=)
 
 
 # def dict_to_list(d: dict, key: str) -> list:

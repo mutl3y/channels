@@ -37,15 +37,14 @@ class GUI_Test(TestCase):
         # test code
         c = Channel('test', 1, 'BULK UP')
         # c = channels.Channel('name',1,'str')
-        print('item to add ', c.__dict__.values())
+        print('Test: item to add to channel list', c)
         self.assertListEqual(list(c.__dict__.values()), ['test', 1, 'BULK UP', 409606250])
-        # app_settings.data['channels'] = []
-        # # += c.__dict__
-        # app_settings.data['channels'].append(c.__dict__.values())
-        print(app_settings.data['channels'])
-        # app_settings.write_config()
-        # self.assertDictEqual(dict(app_settings.config['channels']), c.__dict__)
+        app_settings.channels.append(c)
+        app_settings.channels.append(c)
+        self.assertListEqual(app_settings.channels, [c,c])
 
-        print('should show 2 items',list(app_settings.data['channels']))
+        print('Test: should show 2 items')
+        for i in app_settings.channels:
+            print('     ',i)
 
         main()
