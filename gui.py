@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import PySimpleGUI as sg
-import channels
+from channels import *
 import time
 from persistence.data_class_storage import To_yaml as Settings
 
@@ -135,8 +135,9 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
     }
 
     layout = [[], ]
+    headers = [header.capitalize() for header in config.channels[0].keys()]
 
-    for key in config.annel_headers:
+    for key in headers:
         layout += [edit_channel_window_layouts[key.lower()]]
 
     layout += [[sg.B('Ok'), sg.B('Cancel')]]

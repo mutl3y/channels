@@ -1,10 +1,9 @@
-import pprint
+import os
+# import persistence.data_class_storage as config
+import tempfile
 from unittest import TestCase
 
 import channels
-# import persistence.data_class_storage as config
-import tempfile
-import os
 
 
 def cleanup(file):
@@ -19,7 +18,9 @@ def cleanup(file):
 
 class TestChannel(TestCase):
     def test_keys(self):
-        c = channels.Channel('test', 1, 'BULK UP')
+        f = channels.Frequency(enabled=True, hz = 409600333)
+        print(f)
+        c = channels.Channel('test', f, 'BULK UP')
         self.assertEqual(list(c.__dict__.keys()), ['name', 'frequency', 'channel_type'])
 
     def test_values(self):
@@ -76,4 +77,4 @@ class TestConfigData(TestCase):
         self.addCleanup(cleanup, configfile)
         app_config = channels.ConfigData()
         app_config.default_config()
-        self.assertEqual (10, len(app_config.enabled_frequencies()))
+        self.assertEqual(10, len(app_config.enabled_frequencies()))

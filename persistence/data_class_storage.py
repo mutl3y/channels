@@ -18,6 +18,13 @@ class To_yaml:
             my_model[name] = d[name]
         return cls(**my_model)
 
+
+
+
+if __name__ == '__main__':
+    print('Persistence for dataclasses')
+
+
 # class dataclass_persistence_decorator(object):
 #     class Power(object):
 #         def __init__(self, arg):
@@ -31,7 +38,3 @@ class To_yaml:
 #         func()
 #         print("Something is happening after the function is called.")
 #     return wrapper
-
-
-if __name__ == '__main__':
-    print('Persistence for dataclasses')
