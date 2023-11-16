@@ -3,10 +3,10 @@
 import PySimpleGUI as sg
 import channels
 import time
-from settings.config import Settings as Settings
+from persistence.data_class_storage import To_yaml as Settings
 
 
-def channels_window(conf: Settings, theme: str ='bluePurple') -> (bool, dict):
+def channels_window(conf: dict, theme: str = 'bluePurple') -> (bool, dict):
     """
     Show the channel configuration window
 
@@ -19,27 +19,13 @@ def channels_window(conf: Settings, theme: str ='bluePurple') -> (bool, dict):
         sg.Theme = theme
     selected_cell = None
 
-    # print('Pretty printing ', config.channels)
-    # for i in config.channels:
-    #     print(list(i.values()))
-    #
-    # ch_list2 = [(list(i.values())) for i in config.channels]
-    # print(ch_list2)
-    # time.sleep(3)
-    # exit(0)
-    cc = channels.Channel('',1,'')
-    del(cc)
-
-    val = [i.values() for i in conf.channels]
+    val = [list(i.values()) for i in conf.channels]
     headers = [header.capitalize() for header in conf.channels[0].keys()]
-
-    print(headers)
-    print(val)
 
     right_click_menu_def = [[], ['Add', 'Edit ', 'Clone', 'Delete']]
     layout = [
         # [sg.T('Channel Config', font='DEFAIULT 18')],
-        [sg.Table(values=val, headings=conf.channel_headers,
+        [sg.Table(values=val, headings=headers,
                   auto_size_columns=True,
                   display_row_numbers=False,
                   justification='center', key='-TABLE-',
@@ -140,12 +126,12 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
     edit_channel_window_layouts = {
         'name': [sg.T('Name'), sg.Push(), sg.Input(default_text=current[0], key='-NAME-', size=10, )],
         'center': [sg.T('Center'), sg.Push(),
-                   sg.Combo(default_value=current[1], values=channels.enabled_frequencies(working_config),
+                   sg.Combo(default_value=current[1], values=[],  #[f for f in working_config.channels if f.e] , #channels.enabled_frequencies(working_config),
                             readonly=False, k='-CENTER-', size=11)],
         'channel_type': [sg.T('Channel Type'), sg.Push(),
-                         sg.Combo(default_value=current[2], values=working_config['channel_types'],
+                         sg.Combo(default_value=current[2], values=list(working_config.channel_types),
                                   readonly=False, k='-CH_TYPE-', size=11)],
-        'fpga': [sg.T('FPGA'), sg.Push(), sg.T(default_text='', key='-FPGA-', size=10, )],
+        'fpga': [sg.T('FPGA'), sg.Push(), sg.T(key='-FPGA-', size=10, )],
     }
 
     layout = [[], ]

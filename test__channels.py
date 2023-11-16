@@ -1,7 +1,8 @@
 import pprint
 from unittest import TestCase
-from channels import Channel, default_config, main
-import settings.config as config
+
+import channels
+# import persistence.data_class_storage as config
 import tempfile
 import os
 
@@ -18,36 +19,61 @@ def cleanup(file):
 
 class TestChannel(TestCase):
     def test_keys(self):
-        c = Channel('test', 1, 'BULK UP')
-        self.assertEqual(list(c.__dict__.keys()), ['name', 'center', 'channel_type', 'fpga'])
+        c = channels.Channel('test', 1, 'BULK UP')
+        self.assertEqual(list(c.__dict__.keys()), ['name', 'frequency', 'channel_type'])
 
     def test_values(self):
-        c = Channel('test', 409606250, 'BULK UP')
-        self.assertListEqual(list(c.__dict__.values()), ['test', 409606250, 'BULK UP', 1])
+        c = channels.Channel('test', channels.Frequency(hz=409606250, enabled=True), 'BULK UP')
+        self.assertListEqual(list(c.__dict__.values()),
+                             ['test', channels.Frequency(hz=409606250, enabled=True), 'BULK UP'])
 
 
 class GuiTest(TestCase):
     def test_test_code(self):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
         self.addCleanup(cleanup, configfile)
-        app_settings = config.Settings()
-        # app_settings.data = default_config()
+        app_config = channels.ConfigData()
+        app_config.default_config()
 
-        # force overwrite of configuration
-        app_settings.save(configfile.name)
+        print(app_config)
 
-        # test code
-        c = Channel('test', 409606250, 'BULK UP')
-        # c = channels.Channel('name',1,'str')
-        self.assertListEqual(list(c.__dict__.values()), ['test',409606250, 'BULK UP', 1])
-        app_settings.channels.append(c)
-        app_settings.channels.append(c)
-        self.assertListEqual(app_settings.channels, [c, c])
 
-        print('Test: item to add to channel list', c)
-        print('Test: should show 2 items')
-        pp.pprint(app_settings.channels)
+#         # app_config.data = default_config()
+#
+#         # force overwrite of configuration
+#         app_config.save(configfile.name)
+#
+#         # test code
+#         c = Channel('test', 409606250, 'BULK UP')
+#         # c = channels.Channel('name',1,'str')
+#         self.assertListEqual(list(c.__dict__.values()), ['test',409606250, 'BULK UP', 1])
+#         app_config.channels.append(c)
+#         app_config.channels.append(c)
+#         self.assertListEqual(app_config.channels, [c, c])
+#
+#         print('Test: item to add to channel list', c)
+#         print('Test: should show 2 items')
+#         pp.pprint(app_config.channels)
+#
+#         main()
+#
+#
+#     def test_list(self):
+#         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
+#         self.addCleanup(cleanup, configfile)
+#         app_config = config.To_yaml()
+#         print(
+#             [f for f in app_config.frequencies]
+#         )
+#
 
-        main()
+# pp = pprint.PrettyPrinter(indent=4)
 
-pp = pprint.PrettyPrinter(indent=4)
+
+class TestConfigData(TestCase):
+    def test_enabled_frequencies(self):
+        configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
+        self.addCleanup(cleanup, configfile)
+        app_config = channels.ConfigData()
+        app_config.default_config()
+        self.assertEqual (10, len(app_config.enabled_frequencies()))

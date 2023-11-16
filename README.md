@@ -1,20 +1,22 @@
 
 
 ```mermaid
+---
+    title: NMS Tuning Helper
+---
 classDiagram
-    APP <|-- OutputFile
-    OutputFile <|-- SiteList
-    OutputFile <|-- ChannelConfig
-    OutputFile <|-- FlexNetSimConfig
-    OutputFile <|-- TowerChannels
-    OutputFile <|-- ValidDeviceTypes
-    class APP{
-    }
-    class Enum{
-    }
+    class APP["main application"]
+    class OutputFactory["Output Factory"]
+    
+    APP <|-- OutputFactory
+    OutputFactory <|-- SiteList
+    OutputFactory <|-- ChannelConfig
+    OutputFactory <|-- FlexNetSimConfig
+    OutputFactory <|-- TowerChannels
+
     namespace Output{
-        class OutputFile{
-            +generate_output_file()
+        class OutputFactory{
+            generate_output_file()
         }
         class SiteList{
         }
@@ -24,25 +26,50 @@ classDiagram
         }
         class TowerChannels{
         }
-        class ValidDeviceTypes{
-        }
+
     }
     APP <|-- InputFiles
-    Enum <|-- ChannelType
-    InputFiles <|-- Settings
+    Channel <|-- ChannelType
+    ChannelType <|-- Enum 
+    InputFiles <|-- To_yaml
     InputFiles <|-- Channel
     namespace Input{
         class InputFiles{
         }
-        class Settings{
+        class Enum{
+        BULK UP 
+        BULK DOWN 
+        L2ACK
+        PRIORITY 
+        RTS
+    }
+        class To_yaml{
             +channels List[Channel]
         }
         class Channel{
             +name string
             +centre int
-            +type ChannelType
+            +channel_type E
+            +FPGA enumeration
+            
         }
         class ChannelType{
         }
+    }
+
+    namespace PersistanceLayer {
+        class To_yaml {
+            channels list(Channel)
+            frequencies list(frequencies)
+            tgb list(Tgb)
+            channel_groups dict(list(Channel))
+            
+            
+            +save()
+            +load()
+}
+            
+            
+        
     }
 ```
