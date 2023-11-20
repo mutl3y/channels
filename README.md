@@ -31,7 +31,7 @@ classDiagram
     APP <|-- InputFiles
     Channel <|-- ChannelType
     ChannelType <|-- Enum 
-    InputFiles <|-- To_yaml
+    InputFiles <|-- SaveAsYaml
     InputFiles <|-- Channel
     namespace Input{
         class InputFiles{
@@ -43,7 +43,7 @@ classDiagram
         PRIORITY 
         RTS
     }
-        class To_yaml{
+        class SaveAsYaml{
             +channels List[Channel]
         }
         class Channel{
@@ -58,7 +58,7 @@ classDiagram
     }
 
     namespace PersistanceLayer {
-        class To_yaml {
+        class SaveAsYaml {
             channels list(Channel)
             frequencies list(frequencies)
             tgb list(Tgb)

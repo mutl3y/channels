@@ -1,29 +1,60 @@
 #!/usr/bin/env python3
 import yaml
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 
 
-class To_yaml:
+@dataclass
+class SaveAsYaml:
+    """will save a dataclass object as yaml
+
+    annotates tuples to a list in a dict with key of _TUPLE
+    """
 
     def save(self, path):
         with open(path, "wb") as f:
-            yaml.safe_dump(self.__dict__, f, encoding='utf-8')
+            c = asdict(self)
+            d = c.copy()
+
+            for k, v in c.items():
+                if isinstance(v, tuple):
+                    d[k] = {'_TUPLE': list(v)}
+                if k != '_filename':
+                    d[k] = c[k]
+                    continue
+
+            yaml.safe_dump(c, f, encoding='utf-8')
+            del c, d
 
     @classmethod
-    def load(cls, file_name):
+    def load(cls, path, verbose=False):
+
+        try:
+            with open(path, "rb") as f:
+                d = yaml.safe_load(f)
+                if d is None:
+                    raise yaml.YAMLError(f'Could not parse yaml from {f.name}')
+                if verbose:
+                    print(f'Parsing {path}\n{d}')
+        except Exception as e:
+            return e
+
         my_model = {}
-        with open(file_name, "rb") as f:
-            d = yaml.safe_load(f)
-        for name in cls.__annotations__:
-            my_model[name] = d[name]
+        for k in cls.__annotations__:
+            try:
+                if k != '_filename':
+                    if isinstance(d[k], dict):
+                        if '_TUPLE' in d[k].keys() and isinstance(d[k]['_TUPLE'], list):
+                            my_model[k] = tuple(d[k]['_TUPLE'])
+                    else:
+                        my_model[k] = d[k]
+            except TypeError as e:
+                print(f'{k} not in {path}')
+                continue
         return cls(**my_model)
-
-
 
 
 if __name__ == '__main__':
     print('Persistence for dataclasses')
-
 
 # class dataclass_persistence_decorator(object):
 #     class Power(object):

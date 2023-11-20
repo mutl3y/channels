@@ -3,10 +3,10 @@
 import PySimpleGUI as sg
 from channels import *
 import time
-from persistence.data_class_storage import To_yaml as Settings
+from persistence.data_class_storage import SaveAsYaml as Settings
 
 
-def channels_window(conf: dict, theme: str = 'bluePurple') -> (bool, dict):
+def channels_window(conf: dict, theme: str = 'bluePurple', test=False) -> (bool, dict):
     """
     Show the channel configuration window
 
@@ -19,9 +19,9 @@ def channels_window(conf: dict, theme: str = 'bluePurple') -> (bool, dict):
         sg.Theme = theme
     selected_cell = None
 
-    val = [list(i.values()) for i in conf.channels]
-    headers = [header.capitalize() for header in conf.channels[0].keys()]
-
+    val = [list(i.values()) for i in conf['channels']]
+    headers = [header.capitalize() for header in conf['channels'][0].keys()]
+    print(headers)
     right_click_menu_def = [[], ['Add', 'Edit ', 'Clone', 'Delete']]
     layout = [
         # [sg.T('Channel Config', font='DEFAIULT 18')],
@@ -36,6 +36,8 @@ def channels_window(conf: dict, theme: str = 'bluePurple') -> (bool, dict):
                   enable_click_events=True, right_click_selects=True, right_click_menu=right_click_menu_def)],
         [sg.B('Ok'), sg.B('Cancel')],
     ]
+    if test:
+        return True, conf
 
     window = sg.Window('Channel Config', layout, keep_on_top=True)
     selected_cell = None
@@ -56,7 +58,7 @@ def channels_window(conf: dict, theme: str = 'bluePurple') -> (bool, dict):
             selected_cell = event[2]
             print(f'You selected row {selected_cell}')
         elif 'Delete' in event:
-            del conf.channels[selected_cell[0]]
+            del conf['channels'][selected_cell[0]]
             print(f'deleted cell {selected_cell[0]}')
 
         # elif 'Add' in event:  # todo flesh out add and clone
@@ -67,7 +69,7 @@ def channels_window(conf: dict, theme: str = 'bluePurple') -> (bool, dict):
                 changed, new_conf = edit_channel_window(conf, selected_cell[0])
                 if changed:
                     conf = new_conf
-                    del conf
+                    del new_conf
                 print(f'Cloned Channel {selected_cell[0]}')
         elif 'Edit' in event:
             if selected_cell is None:
@@ -95,9 +97,9 @@ def channels_window(conf: dict, theme: str = 'bluePurple') -> (bool, dict):
         elif event == 'Ok':
             # sg.user_settings_set_entry('-theme-', values['-THEME-'])
             return True, conf
-        # updated_list = [val for index in config['channels'] val in config['channels'][i].__dict__.values()]
+        # updated_list = [val for index in config['channels'] val in config['channels'].[i].__dict__.values()]
         # print(updated_list)
-        # window['-TABLE-'].update(values=)
+        window['-TABLE-'].update(values=conf['channels'])
 
 
 # def dict_to_list(d: dict, key: str) -> list:
@@ -126,7 +128,8 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
     edit_channel_window_layouts = {
         'name': [sg.T('Name'), sg.Push(), sg.Input(default_text=current[0], key='-NAME-', size=10, )],
         'center': [sg.T('Center'), sg.Push(),
-                   sg.Combo(default_value=current[1], values=[],  #[f for f in working_config.channels if f.e] , #channels.enabled_frequencies(working_config),
+                   sg.Combo(default_value=current[1], values=[],
+                            # [f for f in working_config.channels if f.e] , #channels.enabled_frequencies(working_config),
                             readonly=False, k='-CENTER-', size=11)],
         'channel_type': [sg.T('Channel Type'), sg.Push(),
                          sg.Combo(default_value=current[2], values=list(working_config.channel_types),
@@ -135,7 +138,7 @@ def edit_channel_window(config: dict, key: int) -> (bool, dict):
     }
 
     layout = [[], ]
-    headers = [header.capitalize() for header in config.channels[0].keys()]
+    headers = [header.capitalize() for header in config['channels'][0].keys()]
 
     for key in headers:
         layout += [edit_channel_window_layouts[key.lower()]]
