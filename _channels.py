@@ -32,12 +32,16 @@ class Channel():
 
 @dataclasses.dataclass
 class ConfigData(persistence.data_class_storage.SaveAsYaml):
-    _filename: str = dataclasses.field(init=False, default='config.yaml', hash=False)
+    _filename: str = dataclasses.field(init=True, default='config.yaml', hash=False, repr=False)
     channels: list = dataclasses.field(init=True, default_factory=list)
     channel_groups: list = dataclasses.field(init=True, default_factory=list)
     frequencies: list = dataclasses.field(init=True, default_factory=list)
     channel_types: list = dataclasses.field(init=True, default_factory=list)
     channel_headers: list = dataclasses.field(init=True, default_factory=list)
+
+    @property
+    def filename(self):
+        return self._filename
 
     def default_config(self, **kwargs):
         if 'enabled_freq_tuple' not in kwargs.keys():
@@ -49,6 +53,7 @@ class ConfigData(persistence.data_class_storage.SaveAsYaml):
                             range(enabled_freq_tuple[0], enabled_freq_tuple[1])]
         self.channel_types = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
         self.channels = [Channel(frequency=self.frequencies[0], channel_type='BULK', name='test')]
+        return self
 
     def enabled_frequencies(self) -> list:
         return [freq for freq in self.frequencies if freq.enabled]
@@ -57,20 +62,23 @@ class ConfigData(persistence.data_class_storage.SaveAsYaml):
         for k in self.__annotations__:
             if k in d.keys():
                 setattr(self, k, d[k])
-        self.save(self._filename)
+        self.save(self.filename)
+
+
 
 
 def config_factory(filename='config.yaml', **kwargs) -> ConfigData:
     cfg = ConfigData().load(filename, kwargs)
-    cfg._fileName = filename
     if isinstance(cfg, FileNotFoundError):
         if 'verbose' in kwargs.keys() and kwargs['verbose']:
             print('Creating default config')
+
         if 'enabled_freq_tuple' in kwargs.keys():
-            enabled_freq_tuple = kwargs['enabled_freq_tuple']
-            cfg = ConfigData().default_config(enabled_freq_tuple=enabled_freq_tuple)
+            cfg = ConfigData().default_config(enabled_freq_tuple=kwargs['enabled_freq_tuple'])
         else:
             cfg = ConfigData().default_config()
+
+        cfg._fileName = filename
 
         cfg.save(filename)
     elif isinstance(cfg, yaml.YAMLError):
