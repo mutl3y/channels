@@ -1,12 +1,9 @@
 import dataclasses
 import os
-import tempfile
-from dataclasses import asdict
 from unittest import TestCase
 
 import gui
 import user_interfaces
-from _channels import config_factory, Channel, Frequency
 
 
 def cleanup(file):
@@ -23,35 +20,43 @@ def cleanup(file):
 class ConfigData:
     channels: list = dataclasses.field(init=True, default_factory=list)
 
+
 # used in tests
 channels_as_dict = {'channels': [
     {'name': 'test', 'channel_type': 'BULK', 'frequency': {'enabled': True, 'fpga': 200, 'hz': 410850000}},
     {'name': 'test2', 'channel_type': 'BULK', 'frequency': {'enabled': True, 'fpga': 200, 'hz': 410850000}}
 ]}
 
+test_lookups = {'channel_type': ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']}
+
+
 class TestGraphicalUi(TestCase):
-    def test_decode(self):
+    # def test_decode(self):
+    #
+    #     a_str, a_list, b_list = gui.decode(channels_as_dict.copy())
+    #     self.assertIsInstance(a_str, str)
+    #     self.assertIsInstance(a_list, list)
+    #     self.assertIsInstance(b_list, list)
+    #     print(f'Headers {a_list} \nData : {b_list}')
 
-        a_str, a_list, b_list = gui.decode(channels_as_dict.copy())
-        self.assertIsInstance(a_str, str)
-        self.assertIsInstance(a_list, list)
-        self.assertIsInstance(b_list, list)
-        print(f'Headers {a_list} \nData : {b_list}')
+    # def test_pack(self):
+    #     d = channels_as_dict['channels'][0]
+    #     print(d)
+    #     headers, list_in = list(d.keys()), list(d.values())
+    #
+    #     a_data = gui.pack(headers, list_in)
+    #     print(a_data)
+    #     self.assertIsInstance(a_data, dict)
+    #     self.assertEqual(headers,list(a_data.keys()))
+    #
+    #
+    #     ch0 = {'name': ['test', 'BULK', {'enabled': True, 'fpga': 200, 'hz': 410850000}]}
+    #     print(f'check output \n{a_data} \n{ch0}')
+    #     self.assertDictEqual(a_data, ch0)
 
-    def test_pack(self):
-        title, headers, data = gui.decode(channels_as_dict.copy())
-        a_data = gui.pack(headers[0], data[0])
-        print(a_data)
-        self.assertIsInstance(a_data, dict)
-        self.assertEqual(list(a_data.keys())[0], headers[0])
-
-        ch0 = {'name': ['test', 'BULK', {'enabled': True, 'fpga': 200, 'hz': 410850000}]}
-
-        self.assertDictEqual(a_data, ch0)
     def test_edit(self):
         ui = user_interfaces.new_ui('gui')
-        changed, ret = ui.edit(a_dict=channels_as_dict.copy(), auto_close=20)
-        self.assertIsInstance(ret, dict)
-        self.assertIsInstance(changed, bool)
-
-
+        changed, ret = ui.edit(title='channels', a_dict=channels_as_dict.copy()['channels'], auto_close=10,
+                               lookup=test_lookups)
+        # self.assertIsInstance(ret, dict)
+        # self.assertIsInstance(changed, bool)

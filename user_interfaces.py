@@ -6,21 +6,23 @@ class UI(ABC):
     """ Top level UI interface"""
 
     @abstractmethod
-    def edit(self, a_dict, **kwargs) -> (bool, dict):
+    def edit(self, title: str, a_dict, **kwargs) -> (bool, dict):
         pass
 
 
 class GraphicalUi(UI, ABC):
     """ Graphical PySimpleGUI """
 
-    def edit(self, a_dict, **kwargs) -> (bool, dict):
-        return gui.edit_channels(a_dict=a_dict, **kwargs)
+    def edit(self, title: str, a_dict, **kwargs) -> (bool, dict):
+        if isinstance(a_dict[0], list):
+            return gui.edit_table_window(title=title, a_dict=a_dict, **kwargs)
+        return gui.edit_item_window(title=title, a_dict=a_dict[0], **kwargs)
 
 
 class TextUi(UI, ABC):
     """ Graphical PySimpleGUI """
 
-    def edit(self, a_dict, **kwargs) -> (bool, dict):
+    def edit(self, title: str, a_dict, **kwargs) -> (bool, dict):
         # return None
         pass
 

@@ -20,14 +20,12 @@ class SaveAsYaml:
                     d[k] = {'_TUPLE': list(v)}
                 if k != '_filename':
                     d[k] = c[k]
-                    continue
 
             yaml.safe_dump(c, f, encoding='utf-8')
             del c, d
 
     @classmethod
     def load(cls, path, verbose=False):
-
         try:
             with open(path, "rb") as f:
                 d = yaml.safe_load(f)
@@ -41,6 +39,7 @@ class SaveAsYaml:
 
         my_model = {}
         for k in cls.__annotations__:
+
             # try:
             if k != '_filename':
                 if isinstance(d[k], dict):
@@ -48,9 +47,6 @@ class SaveAsYaml:
                         my_model[k] = tuple(d[k]['_TUPLE'])
                 else:
                     my_model[k] = d[k]
-        # except TypeError as e:
-        #     print(f'{k} not in {path}')
-        #     continue
         return cls(**my_model)
 
 
