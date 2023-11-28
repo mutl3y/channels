@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 import yaml
 
-from _channels import Frequency, Channel, ConfigData, config_factory
+from AppConfig import Frequency, Channel, ConfigData, config_factory
 
 
 def cleanup(file):
@@ -100,14 +100,17 @@ class TestChannel(TestCase):
 
         # reload config
         new_app_config = ConfigData(configfile.name)
-        print(f'test print only -- reloading config {new_app_config}')
+        print(f'test print only -- before update \n{new_app_config}')
         new_app_config.update(asdict(app_config))
+        print(f'test print only -- after update \n{new_app_config}')
 
         self.assertIsInstance(new_app_config, ConfigData)
         self.assertIsInstance(new_app_config, ConfigData)
         self.assertIsInstance(new_app_config.frequencies[0], Frequency)
         self.assertIsInstance(new_app_config.channels[0], Channel)
         self.assertIsInstance(new_app_config.channels[0].frequency, Frequency)
+        print(f'test print only -- reloading config \n{asdict(new_app_config)}')
+
 
         # print(app.enabled_frequencies())
         #

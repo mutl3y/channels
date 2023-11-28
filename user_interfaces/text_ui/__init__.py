@@ -45,7 +45,7 @@ def main(stdstr, c):
             pad.addstr(key)
             if key in ['q', 'Q']:
                 break
-            elif key in [curses.KEY_DOWN,curses.KEY_UP, curses.KEY_LEFT, curses.KEY_RIGHT]:
+            elif key in [curses.KEY_DOWN, curses.KEY_UP, curses.KEY_LEFT, curses.KEY_RIGHT]:
                 pad.addstr(f'arrow key detected {key}')
                 if key == curses.KEY_UP:
                     py -= 1
@@ -69,9 +69,7 @@ def main(stdstr, c):
         except:
             pass
 
-
-
-        pad.refresh(0,0, 5,5, 10, 10)
+        pad.refresh(0, 0, 5, 5, 10, 10)
         time.sleep(0.5)
 
 
@@ -88,7 +86,7 @@ if __name__ == '__main__':
             {'enabled': True, 'fpga': 201, 'hz': 410856250}
         ],
         'max_channels': 48,
-        'theme': 'bluePurple',
+        # 'theme': 'bluePurple',
         'towers': []
     }
     wrapper(main, config)

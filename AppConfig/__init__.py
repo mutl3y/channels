@@ -1,7 +1,6 @@
 import dataclasses
 import yaml
-import persistence.data_class_storage
-import enum
+from AppConfig.persistence import data_class_storage
 
 
 # @dataclasses.dataclass
@@ -23,8 +22,8 @@ class Frequency:
         self.fpga = int((self.hz - 409600000) / 6250)
 
     @property
-    def Fpga(self):
-        return self.fpga
+    def _fpga(self):
+        return int((self.hz - 409600000) / 6250)
 
 
 @dataclasses.dataclass(order=True)
@@ -69,18 +68,13 @@ class ConfigData(persistence.data_class_storage.SaveAsYaml):
                     if verbose:
                         print(f'{k}:{d[k]}')
                     my_model[k] = d[k]
-        return cls(**my_model).fix_type()
+        return cls(**my_model).fix_data_types()
 
     @property
     def filename(self):
         return self._filename
 
-    def default_config(self, **kwargs):
-        if 'enabled_freq_tuple' not in kwargs.keys():
-            enabled_freq_tuple: tuple = (200, 210)
-        else:
-            enabled_freq_tuple = kwargs['enabled_freq_tuple']
-
+    def default_config(self, enabled_freq_tuple: tuple = (200, 210)):
         self.frequencies = [Frequency(hz=int(6250 * int(fpga)) + 409600000, enabled=True) for fpga in
                             range(enabled_freq_tuple[0], enabled_freq_tuple[1])]
         self.channel_types = ['BULK UP', 'BULK DOWN', 'L2ACK', 'PRIORITY', 'RTS']
@@ -94,24 +88,23 @@ class ConfigData(persistence.data_class_storage.SaveAsYaml):
         for k in self.__annotations__:
             if k in d.keys():
                 setattr(self, k, d[k])
-        self.fix_type()
+        self.fix_data_types()
         self.save(self.filename)
 
-
-    def fix_type(self):
+    def fix_data_types(self):
         self.fix_frequency_list()
         self.fix_channel_lists()
         return self
 
     def fix_frequency_list(self):
-        fixed_frequncy_list = list()
+        fixed_frequency_list = list()
         for f in self.frequencies:
             if isinstance(f, Frequency):
-                fixed_frequncy_list.append(f)
+                fixed_frequency_list.append(f)
             else:
                 fr = Frequency(hz=f['hz'], enabled=f['enabled'])
-                fixed_frequncy_list.append(fr)
-        self.frequencies = fixed_frequncy_list
+                fixed_frequency_list.append(fr)
+        self.frequencies = fixed_frequency_list
 
     def fix_channel_lists(self):
         fixed_channel_list = list()
@@ -124,24 +117,23 @@ class ConfigData(persistence.data_class_storage.SaveAsYaml):
                 fixed_channel_list.append(ch)
         self.channels = fixed_channel_list
 
+    # def lookups(self) -> dict:
+    #     print(self.enabled_frequencies())
+    #     # d = dict()
+    #     # d['hz'] = self.enabled_frequencies()
+    #     # d['channel_type'] = self.channel_types
+    #     return d
 
-    def lookups(self) -> dict:
-        print(self.enabled_frequencies())
-        # d = dict()
-        # d['hz'] = self.enabled_frequencies()
-        # d['channel_type'] = self.channel_types
-        return d
 
-
-def config_factory(filename='config.yaml', **kwargs) -> ConfigData:
-    cfg = ConfigData.load(filename, kwargs)
+def config_factory(filename='config.yaml', verbose=False, enabled_freq_tuple=None) -> ConfigData:
+    cfg = ConfigData.load(path=filename, verbose=verbose)
 
     if isinstance(cfg, FileNotFoundError):
-        if 'verbose' in kwargs.keys() and kwargs['verbose']:
+        if verbose:
             print('Creating default config')
 
-        if 'enabled_freq_tuple' in kwargs.keys():
-            cfg = ConfigData().default_config(enabled_freq_tuple=kwargs['enabled_freq_tuple'])
+        if isinstance(enabled_freq_tuple, tuple):
+            cfg = ConfigData().default_config(enabled_freq_tuple=enabled_freq_tuple)
         else:
             cfg = ConfigData().default_config()
 
@@ -154,7 +146,6 @@ def config_factory(filename='config.yaml', **kwargs) -> ConfigData:
         print(f'Issues reading your config file, check yaml syntax')
         return cfg
     else:
-        if 'verbose' in kwargs.keys() and kwargs['verbose']:
+        if verbose:
             print(f'{cfg}')
-            return cfg.fix_type()
-
+            return cfg.fix_data_types()
