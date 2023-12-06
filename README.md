@@ -57,7 +57,7 @@ classDiagram
         }
     }
 
-    namespace PersistanceLayer {
+    namespace PersistenceLayer {
         class SaveAsYaml {
             channels list(Channel)
             frequencies list(frequencies)

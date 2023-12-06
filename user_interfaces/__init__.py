@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-import gui
+from gui import gui
 
 
 class UI(ABC):
     """ Top level UI interface"""
 
     @abstractmethod
-    def edit(self, title: str, a_dict, **kwargs) -> (bool, dict):
+    def edit(self, title: str, a_dict, lookup, **kwargs) -> (bool, dict):
         pass
 
     def home(self, config_as_dict) -> (bool, dict):
@@ -31,7 +31,7 @@ class GraphicalUi(UI, ABC):
 class TextUi(UI, ABC):
     """ Graphical PySimpleGUI """
 
-    def edit(self, title: str, a_dict, **kwargs) -> (bool, dict):
+    def edit(self, title: str, a_dict, lookup, **kwargs) -> (bool, dict):
         # return None
         pass
 

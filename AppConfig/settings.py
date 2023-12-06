@@ -28,7 +28,7 @@ class Channel:
 
 @dataclasses.dataclass
 class ConfigData(data_class_storage.SaveAsYaml):
-    _filename: str = dataclasses.field(init=True, default='config.yaml', hash=False, repr=False)
+    _filename: str = dataclasses.field(init=True, default='Config.yaml', hash=False, repr=False)
     channels: list = dataclasses.field(init=True, default_factory=list)
     channel_groups: list = dataclasses.field(init=True, default_factory=list)
     frequencies: list = dataclasses.field(init=True, default_factory=list)
@@ -110,20 +110,20 @@ class ConfigData(data_class_storage.SaveAsYaml):
                 fixed_channel_list.append(ch)
         self.channels = fixed_channel_list
 
-    # def lookups(self) -> dict:
-    #     print(self.enabled_frequencies())
-    #     # d = dict()
-    #     # d['hz'] = self.enabled_frequencies()
-    #     # d['channel_type'] = self.channel_types
-    #     return d
+    def lookups(self) -> dict:
+        print(self.enabled_frequencies())
+        d = dict()
+        d['hz'] = self.enabled_frequencies()
+        d['channel_type'] = self.channel_types
+        return d
 
 
-def config_factory(filename='config.yaml', verbose=False, enabled_freq_tuple=None) -> ConfigData:
+def config_factory(filename='Config.yaml', verbose=False, enabled_freq_tuple=None) -> ConfigData:
     cfg = ConfigData.load(path=filename, verbose=verbose)
 
     if isinstance(cfg, FileNotFoundError):
         if verbose:
-            print('Creating default config')
+            print('Creating default Config')
 
         if isinstance(enabled_freq_tuple, tuple):
             cfg = ConfigData().default_config(enabled_freq_tuple=enabled_freq_tuple)
@@ -136,7 +136,7 @@ def config_factory(filename='config.yaml', verbose=False, enabled_freq_tuple=Non
 
         return cfg
     elif isinstance(cfg, yaml.YAMLError):
-        print(f'Issues reading your config file, check yaml syntax')
+        print(f'Issues reading your Config file, check yaml syntax')
         return cfg
     else:
         if verbose:

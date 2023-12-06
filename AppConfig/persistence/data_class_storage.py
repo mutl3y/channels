@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import yaml
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, asdict
 
 
 @dataclass
@@ -47,6 +47,7 @@ class SaveAsYaml:
                         my_model[k] = tuple(d[k]['_TUPLE'])
                 else:
                     my_model[k] = d[k]
+        # noinspection PyArgumentList
         return cls(**my_model)
 
 

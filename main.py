@@ -1,8 +1,9 @@
 from dataclasses import asdict
 import user_interfaces
-import AppConfig
+from AppConfig import settings
 
-def main(app_settings: AppConfig.ConfigData):
+
+def main(app_settings: settings.ConfigData):
     # Start a gui with the configuration as set
     ui = user_interfaces.new_ui('gui')
     print(app_settings)
@@ -15,5 +16,5 @@ def main(app_settings: AppConfig.ConfigData):
 
 
 if __name__ == '__main__':
-    cfg = AppConfig.config_factory()
+    cfg = settings.config_factory()
     main(cfg)

@@ -8,7 +8,7 @@ def main(stdstr, c):
     y = 0
     x = 0
     stdstr.clear()
-    maxY, maxX = stdstr.getmaxyx()
+    max_y, max_x = stdstr.getmaxyx()
 
     pad = curses.newpad(200, 200)
     stdstr.refresh()
@@ -39,7 +39,7 @@ def main(stdstr, c):
     px, py = 0, 0
     pad.clear()
     while True:
-        key = ''
+        key: str = ''
         try:
             key = pad.getkey()
             pad.addstr(key)
@@ -53,20 +53,21 @@ def main(stdstr, c):
                         py = 0
                 elif key == curses.KEY_DOWN:
                     py -= 1
-                    if py >= maxY - 1:
-                        py = maxY - 1
+                    if py >= max_y - 1:
+                        py = max_y - 1
                 elif key == curses.KEY_LEFT:
                     px -= 1
                     if px <= 0:
                         px = 0
                 elif key == curses.KEY_RIGHT:
                     px += 1
-                    if px >= maxX - 1:
-                        px = maxX - 1
+                    if px >= max_x - 1:
+                        px = max_x - 1
             else:
                 pad.addstr(key)
 
-        except:
+        except Exception as e:
+            print(e)
             pass
 
         pad.refresh(0, 0, 5, 5, 10, 10)

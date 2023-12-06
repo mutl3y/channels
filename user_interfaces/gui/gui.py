@@ -52,7 +52,6 @@ def element_size(item, multiplier: int = 1) -> tuple:
 def set_theme(title='Choose Theme', auto_close: int = 60):
     global theme
 
-
     def _layout():
         """function to set up window"""
         layout = [
@@ -308,7 +307,9 @@ def edit_table_window(title: str, list_in: list, auto_close: int = None, lookup=
         window.refresh()
 
 
-def home(config_as_dict: dict, title: str = 'Tuning Files Helper', auto_close: int = 5):  # todo  change this auto_close to none
+def home(config_as_dict: dict, title: str = 'Tuning Files Helper',
+         auto_close: int = 5):
+    # todo  change this auto_close to none
     """app main page"""
     camel_case_title = title.replace(" ", "_")
 
@@ -376,7 +377,6 @@ def home(config_as_dict: dict, title: str = 'Tuning Files Helper', auto_close: i
         # window['-TABLE-'].update(values=data)
 
         window.refresh()
-
 
     return False, None
 

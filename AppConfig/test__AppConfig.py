@@ -38,7 +38,7 @@ class TestChannel(TestCase):
         # test with empty file
         app_config = config_factory(configfile.name, verbose=False)
         self.assertNotIsInstance(app_config, dict)
-        self.assertIsInstance(app_config,yaml.YAMLError)
+        self.assertIsInstance(app_config, yaml.YAMLError)
 
     def test_config_factory_missing_file(self):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
@@ -70,14 +70,13 @@ class TestChannel(TestCase):
         cleanup(configfile)
 
         app_config = config_factory(configfile.name, verbose=False, enabled_freq_tuple=(100, 200))
-        print(f'test print only -- loading config {app_config}\n')
+        print(f'test print only -- loading Config {app_config}\n')
 
         app_config = ConfigData(configfile.name)
         app_config.default_config(enabled_freq_tuple=(100, 200))
         app_config.save(configfile.name)
 
-
-        # reload config
+        # reload Config
         new_app_config = ConfigData.load(configfile.name)
         self.assertIsInstance(new_app_config, ConfigData)
         self.assertIsInstance(new_app_config.frequencies[0], Frequency)
@@ -97,7 +96,7 @@ class TestChannel(TestCase):
         self.assertIsInstance(app_config.channels[0], Channel)
         self.assertIsInstance(app_config.channels[0].frequency, Frequency)
 
-        # reload config
+        # reload Config
         new_app_config = ConfigData(configfile.name)
         print(f'test print only -- before update \n{new_app_config}')
         new_app_config.update(asdict(app_config))
@@ -108,13 +107,12 @@ class TestChannel(TestCase):
         self.assertIsInstance(new_app_config.frequencies[0], Frequency)
         self.assertIsInstance(new_app_config.channels[0], Channel)
         self.assertIsInstance(new_app_config.channels[0].frequency, Frequency)
-        print(f'test print only -- reloading config \n{asdict(new_app_config)}')
-
+        print(f'test print only -- reloading Config \n{asdict(new_app_config)}')
 
         # print(app.enabled_frequencies())
         #
         # @dataclass
-        # class config():
+        # class Config():
         #     channel_types: list = field(default_factory=list)
         #     channels: list = field(default_factory=list)
         #     frequencies: list = field(default_factory=list)
@@ -126,12 +124,12 @@ class TestChannel(TestCase):
         #                              range(200, 210)]
         #
         # enabled_freq_tuple = (200, 210)
-        # s = config()
+        # s = Config()
         # s.save(configfile.name)
         #
         # print(s)
         # # load saved dataclass from file and compare
-        # t = config().load(configfile.name, verbose=True)
+        # t = Config().load(configfile.name, verbose=True)
         # for k in s.__dict__.keys():
         #     self.assertEqual(t.__dict__[k], s.__dict__[k])
         #     print(f'Checking {k} \n{t.__dict__[k]}  \n{s.__dict__[k]}\n ')
