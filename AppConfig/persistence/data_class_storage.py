@@ -52,17 +52,3 @@ class SaveAsYaml:
 
 if __name__ == '__main__':
     print('Persistence for dataclasses')
-
-# class dataclass_persistence_decorator(object):
-#     class Power(object):
-#         def __init__(self, arg):
-#             self._arg = arg
-#
-#         def __call__(self, a, b):
-#             retval = self._arg(a, b)
-#             return retval ** 2
-#     def wrapper():
-#         print("Something is happening before the function is called.")
-#         func()
-#         print("Something is happening after the function is called.")
-#     return wrapper

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from user_interfaces import gui
+import gui
 
 
 class UI(ABC):

@@ -2,11 +2,10 @@ import os
 import tempfile
 from dataclasses import asdict
 from unittest import TestCase
-from dataclasses import dataclass, field
 
 import yaml
 
-from AppConfig import Frequency, Channel, ConfigData, config_factory
+from settings import Frequency, Channel, ConfigData, config_factory
 
 
 def cleanup(file):

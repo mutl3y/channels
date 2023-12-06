@@ -2,9 +2,10 @@ import dataclasses
 import os
 from unittest import TestCase
 
-from user_interfaces import gui
-from AppConfig import config_factory
+# from user_interfaces import gui
+# from AppConfig.settings import config_factory
 import tempfile
+import gui
 
 
 def cleanup(file):
@@ -22,7 +23,6 @@ class ConfigData:
     channels: list = dataclasses.field(init=True, default_factory=list)
 
 
-
 @dataclasses.dataclass
 class ConfigData2(dict):
     _filename: str = dataclasses.field(init=True, default='config.yaml', hash=False, repr=False)
@@ -30,7 +30,6 @@ class ConfigData2(dict):
     channel_groups: list = dataclasses.field(init=True, default_factory=list)
     frequencies: list = dataclasses.field(init=True, default_factory=list)
     channel_types: list = dataclasses.field(init=True, default_factory=list)
-
 
 
 config_as_dict = {'_filename': 'config.yaml', 'channels': [
@@ -95,9 +94,9 @@ class TestGraphicalUi(TestCase):
         configfile = tempfile.NamedTemporaryFile(delete=False, suffix='.yaml', prefix='')
         self.addCleanup(cleanup, configfile)
         cleanup(configfile)
-        conf = config_factory(configfile.name).default_config()
+        conf = config_as_dict
         print(conf)
-        changed, ret = gui.edit_item_window(title='channels', dict_in=dataclasses.asdict(conf),
+        changed, ret = gui.edit_item_window(title='channels', dict_in=conf,
                                             auto_close=100,
                                             lookup=test_lookups)
         self.assertIsInstance(ret, dict)
