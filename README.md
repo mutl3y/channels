@@ -1,3 +1,4 @@
+[![Pylint](https://github.com/mutl3y/channels/actions/workflows/pylint.yml/badge.svg)](https://github.com/mutl3y/channels/actions/workflows/pylint.yml)
 
 
 ```mermaid
