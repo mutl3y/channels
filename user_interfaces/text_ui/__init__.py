@@ -1,6 +1,6 @@
 import curses, time
 from curses import wrapper
-from curses.textpad import Textbox, rectangle
+# from curses.textpad import Textbox, rectangle
 
 
 def main(stdstr, c):

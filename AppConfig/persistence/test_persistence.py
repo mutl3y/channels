@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
-from data_class_storage import *
-from dataclasses import dataclass, field
+from data_class_storage import SaveAsYaml
+from dataclasses import dataclass, field, asdict
 import tempfile
 
 
@@ -9,9 +9,8 @@ def cleanup(file):
     try:
         file.close()
         os.remove(file.name)
-    except WindowsError as e:
-        if e.winerror != 2:
-            print(f'issues deleting {file.name}')
+    except Exception as e:
+        print(f'issues deleting {file.name} \n{e}')
         pass
 
 
@@ -32,7 +31,6 @@ class Test(TestCase):
                 self.frequencies: list = [{'enabled': True, 'fpga': fpga, 'hz': (6250 * int(fpga)) + 409600000} for fpga
                                           in range(200, 210)]
 
-        enabled_freq_tuple = (200, 210)
         s = Config()
         s.save(configfile.name)
 
@@ -47,18 +45,18 @@ class Test(TestCase):
         self.addCleanup(cleanup, configfile)
 
         @dataclass
-        class yam(SaveAsYaml):
+        class Yam(SaveAsYaml):
             t: tuple = field(default_factory=tuple)
 
             def __post_init__(self):
                 self.t = (410850000, 'BULK', 'test')
 
-        enabled_freq_tuple = (200, 210)
-        s = yam()
+
+        s = Yam()
         s.save(configfile.name)
 
         # load saved dataclass from file and compare
-        t = yam().load(configfile.name, verbose=True)
+        t = Yam().load(configfile.name, verbose=True)
         for k in s.__dict__.keys():
             print(f'Checking {k} \n{s.__dict__[k]}  \n{t.__dict__[k]}\n ')
             self.assertEqual(asdict(s)[k], t.__dict__[k])
